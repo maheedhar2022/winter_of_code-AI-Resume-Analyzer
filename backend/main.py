@@ -1,6 +1,7 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from backend.resume_parser import extract_text_from_pdf
+from backend.matcher import calculate_match_score
 
 app = FastAPI(title="AI Resume Analyzer")
 
@@ -16,10 +17,10 @@ app.add_middleware(
 def root():
     return {"status": "AI Resume Analyzer backend is running"}
 
-@app.post("/upload-resume")
-async def upload_resume(file: UploadFile = File(...)):
-    text = extract_text_from_pdf(file.file)
+@app.post("/analyze")
+async def analyze_resume(file: UploadFile = File(...),job_description: str = Form(...)):
+    resume_text = extract_text_from_pdf(file.file)
+    score = calculate_match_score(resume_text,job_description)
     return {
-        "message": "Resume parsed successfully",
-        "preview": text[:2000]
+        "match_score": score
     }
