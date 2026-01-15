@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.resume_parser import extract_text_from_pdf
 from backend.matcher import calculate_match_score
 from backend.skill_extractor import extract_skills
+from backend.suggestions import generate_suggestions
+
 
 app = FastAPI(title="AI Resume Analyzer")
 
@@ -33,9 +35,11 @@ async def analyze_resume(
 
     matched_skills = list(set(resume_skills) & set(jd_skills))
     missing_skills = list(set(jd_skills) - set(resume_skills))
+    suggestions    = generate_suggestions(score,missing_skills)
 
     return {
         "match_score": score,
         "matched_skills": matched_skills,
-        "missing_skills": missing_skills
+        "missing_skills": missing_skills,
+        "suggestions" : suggestions
     }
