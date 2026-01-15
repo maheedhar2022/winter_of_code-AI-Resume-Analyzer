@@ -3,7 +3,7 @@ import { useState } from "react";
 function App() {
   const [file, setFile] = useState(null);
   const [jobDesc, setJobDesc] = useState("");
-  const [score, setScore] = useState(null);
+  const [result, setResult] = useState(null);
 
   const handleAnalyze = async () => {
     if (!file || !jobDesc) {
@@ -21,7 +21,7 @@ function App() {
     });
 
     const data = await res.json();
-    setScore(data.match_score);
+    setResult(data);
   };
 
   return (
@@ -48,10 +48,24 @@ function App() {
 
       <button onClick={handleAnalyze}>Analyze</button>
 
-      {score !== null && (
-        <h2 style={{ marginTop: "20px" }}>
-          Match Score: {score}%
-        </h2>
+      {result && (
+        <div style={{ marginTop: "20px" }}>
+          <h2>Match Score: {result.match_score}%</h2>
+
+          <h3>Matched Skills</h3>
+          <ul>
+            {result.matched_skills.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+
+          <h3>Missing Skills</h3>
+          <ul>
+            {result.missing_skills.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
